@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from geometry import Triangle, Vec2i
+from geometry import Tri2i, Vec2i
 
 class TestTriangle(TestCase):
 
@@ -9,7 +9,7 @@ class TestTriangle(TestCase):
         a = Vec2i(0, 0)
         b = Vec2i(2, 1)
         c = Vec2i(2, 0)
-        tri = Triangle(a, b, c)
+        tri = Tri2i(a, b, c)
 
         wa, wb, wc = tri.barycentric(Vec2i(1, 1))
         self.assertTrue((point == wa * a + wb * b + wc * c).all())
@@ -18,7 +18,7 @@ class TestTriangle(TestCase):
         a = Vec2i(0, 0)
         b = Vec2i(2, 1)
         c = Vec2i(2, 0)
-        tri = Triangle(a, b, c)
+        tri = Tri2i(a, b, c)
 
         pts = [pt for pt in tri]
 
@@ -30,7 +30,7 @@ class TestTriangle(TestCase):
         a = Vec2i(0, 0)
         b = Vec2i(1, 2)
         c = Vec2i(2, 0)
-        tri = Triangle(a, b, c)
+        tri = Tri2i(a, b, c)
 
         in_point = Vec2i(1, 1)
         out_point = Vec2i(2, 2)

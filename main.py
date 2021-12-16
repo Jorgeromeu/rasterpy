@@ -1,13 +1,10 @@
+import random
+import time
+
 import numpy as np
 
 import image as img
-from geometry import Vec3f, Vec2i, Triangle
-
-def line(x0, y0, x1, y1, image, color, precision=500):
-    for t in np.linspace(0, 1, precision):
-        x = x0 + (x1 - x0) * t
-        y = y0 + (y1 - y0) * t
-        image.set_pixel(int(x), int(y), color)
+from geometry import Vec3f, Vec2i, Tri2i, Tri3f
 
 def read_obj(filename: str):
     vertices = [None]
@@ -27,29 +24,36 @@ def read_obj(filename: str):
 
     return vertices, faces
 
+def read_obj_tris(filename: str):
+    vertices, faces = read_obj(filename)
+    return [Tri3f(vertices[f[0]], vertices[f[1]], vertices[f[2]]) for f in faces]
+
 if __name__ == "__main__":
 
-    image = img.Image(1000, 1000)
+    start = time.time()
 
-    # vertices, faces = read_obj('obj/african_head.obj')
-    #
-    # for face in faces:
-    #
-    #     # for each edge in the face
-    #     for i in range(3):
-    #         v0 = vertices[face[i]]
-    #         v1 = vertices[face[(i + 1) % 3]]
-    #
-    #         x0 = int((v0.x + 1) * image.width / 2)
-    #         y0 = int((v0.y + 1) * image.height / 2)
-    #         x1 = int((v1.x + 1) * image.width / 2)
-    #         y1 = int((v1.y + 1) * image.height / 2)
-    #
-    #         image.draw_line(Vec2i(x0, y0), Vec2i(x1, y1), 1)
+    image = img.Image(200, 200)
 
-    a = Vec2i(100, 100)
-    b = Vec2i(400, 100)
-    c = Vec2i(100, 1000)
-    image.draw_tri(Triangle(a, b, c), 1)
+    world_tris = read_obj_tris('obj/monke_noback.obj')
+    light_pos = Vec3f(100, 100, -100)
+
+    print('tris:', len(world_tris))
+
+    for i, world_tri in enumerate(world_tris):
+
+        normal = world_tri.normal().normalized()
+        light_dir = (world_tri.a - light_pos).normalized()
+
+        color = np.dot(light_dir, normal)
+
+        screen_vertices = [Vec2i(int((v.x + 1) * image.width / 2), int((v.y + 1) * image.height / 2)) for v in
+                           world_tri]
+
+        tri_screen = Tri2i(screen_vertices[0], screen_vertices[1], screen_vertices[2])
+        image.draw_tri(tri_screen, color)
+        print(i)
 
     image.savefig('render.png')
+
+    stop = time.time()
+    print('time', stop - start)

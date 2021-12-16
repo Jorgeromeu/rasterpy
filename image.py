@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import numpy as np
 
-from geometry import Vec2i, Triangle
+from geometry import Vec2i, Tri2i
 
 @dataclass
 class Image:
@@ -30,7 +30,7 @@ class Image:
             y = v0.y + (v1.y - v0.y) * t
             self.set_pixel(int(x), int(y), color)
 
-    def draw_tri(self, tri: Triangle, color):
+    def draw_tri(self, tri: Tri2i, color):
 
         # compute bounding box
         bbox_min_x, bbox_min_y, bbox_max_x, bbox_max_y = tri.bbox()

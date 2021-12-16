@@ -21,6 +21,15 @@ class Vec3f:
     y: float
     z: float
 
+    def __sub__(self, other):
+        return Vec3f(self.x - other.x, self.y - other.y, self.z - other.z)
+
+    def __add_(self, other):
+        return Vec3f(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def __div__(self, other):
+        return Vec3f(self.x / other, self.y / other, self.z / other)
+
     def __iter__(self):
         for pt in [self.x, self.y, self.z]:
             yield pt
@@ -28,8 +37,19 @@ class Vec3f:
     def __array__(self, dtype=None):
         return np.array([self.x, self.y, self.z], dtype=dtype)
 
+    def cross(self, other):
+        x, y, z = np.cross(self, other)
+        return Vec3f(x, y, z)
+
+    def norm(self):
+        return np.linalg.norm(self)
+
+    def normalized(self):
+        length = self.norm()
+        return Vec3f(self.x / length, self.y / length, self.z / length)
+
 @dataclass
-class Triangle:
+class Tri2i:
     a: Vec2i
     b: Vec2i
     c: Vec2i
@@ -74,3 +94,19 @@ class Triangle:
         """
         wa, wb, wc = self.barycentric(point)
         return wa >= 0 and wb >= 0 and wc >= 0
+
+
+@dataclass
+class Tri3f:
+    a: Vec3f
+    b: Vec3f
+    c: Vec3f
+
+    def __iter__(self):
+        for pt in [self.a, self.b, self.c]:
+            yield pt
+
+    def normal(self):
+        e1 = self.b - self.a
+        e2 = self.c - self.a
+        return e1.cross(e2)
