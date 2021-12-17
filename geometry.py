@@ -49,14 +49,19 @@ class Vec3f:
         return Vec3f(self.x / length, self.y / length, self.z / length)
 
 @dataclass
-class Tri2i:
-    a: Vec2i
-    b: Vec2i
-    c: Vec2i
+class Tri3f:
+    a: Vec3f
+    b: Vec3f
+    c: Vec3f
 
     def __iter__(self):
         for pt in [self.a, self.b, self.c]:
             yield pt
+
+    def normal(self):
+        e1 = self.b - self.a
+        e2 = self.c - self.a
+        return e1.cross(e2)
 
     def barycentric(self, point: Vec2i) -> (float, float, float):
         """
@@ -86,7 +91,7 @@ class Tri2i:
             max_x = max(max_x, v.x)
             max_y = max(max_y, v.y)
 
-        return min_x, min_y, max_x, max_y
+        return int(min_x), int(min_y), int(max_x), int(max_y)
 
     def contains_point(self, point: Vec2i) -> bool:
         """
@@ -94,19 +99,3 @@ class Tri2i:
         """
         wa, wb, wc = self.barycentric(point)
         return wa >= 0 and wb >= 0 and wc >= 0
-
-
-@dataclass
-class Tri3f:
-    a: Vec3f
-    b: Vec3f
-    c: Vec3f
-
-    def __iter__(self):
-        for pt in [self.a, self.b, self.c]:
-            yield pt
-
-    def normal(self):
-        e1 = self.b - self.a
-        e2 = self.c - self.a
-        return e1.cross(e2)

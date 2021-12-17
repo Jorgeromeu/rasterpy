@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from geometry import Tri2i, Vec2i
+from geometry import Vec2i
 
 class TestTriangle(TestCase):
 
