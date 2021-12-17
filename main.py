@@ -1,10 +1,9 @@
-import random
 import time
 
 import numpy as np
 
-import image as img
 from geometry import Vec3f, Vec2i, Tri2i, Tri3f
+from image import Color, Image
 
 def read_obj(filename: str):
     vertices = [None]
@@ -32,26 +31,25 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    image = img.Image(200, 200)
+    image = Image(300, 300)
 
-    world_tris = read_obj_tris('obj/monke_noback.obj')
+    world_tris = read_obj_tris('obj/african_boback.obj')
     light_pos = Vec3f(100, 100, -100)
 
-    print('tris:', len(world_tris))
-
     for i, world_tri in enumerate(world_tris):
-
         normal = world_tri.normal().normalized()
         light_dir = (world_tri.a - light_pos).normalized()
 
-        color = np.dot(light_dir, normal)
+        intensity = float(np.dot(light_dir, normal))
 
         screen_vertices = [Vec2i(int((v.x + 1) * image.width / 2), int((v.y + 1) * image.height / 2)) for v in
                            world_tri]
 
         tri_screen = Tri2i(screen_vertices[0], screen_vertices[1], screen_vertices[2])
-        image.draw_tri(tri_screen, color)
-        print(i)
+
+        if intensity > 0:
+            # print(intensity)
+            image.draw_tri(tri_screen, Color(1.0 * intensity, 0.5 * intensity, 0.5 * intensity))
 
     image.savefig('render.png')
 

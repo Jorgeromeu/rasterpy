@@ -6,6 +6,18 @@ import numpy as np
 from geometry import Vec2i, Tri2i
 
 @dataclass
+class Color:
+    r: float
+    g: float
+    b: float
+
+    def to_int(self):
+        r_int = int(self.r * 255)
+        g_int = int(self.g * 255)
+        b_int = int(self.b * 255)
+        return r_int, g_int, b_int
+
+@dataclass
 class Image:
     width: int
     height: int
@@ -14,23 +26,25 @@ class Image:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.arr = np.empty(shape=(height + 1, width + 1))
+        self.arr = np.empty(shape=(height + 1, width + 1, 3))
 
     def savefig(self, filename):
-        plt.imshow(self.arr, cmap='gray', origin='lower')
+        plt.imshow(self.arr, origin='lower')
         plt.savefig(filename, bbox_inches='tight')
 
-    def set_pixel(self, x, y, color):
+    def set_pixel(self, x, y, color: Color):
         if x < len(self.arr) and y < len(self.arr[0]):
-            self.arr[y, x] = color
+            self.arr[y, x, 0] = color.r
+            self.arr[y, x, 1] = color.g
+            self.arr[y, x, 2] = color.b
 
-    def draw_line(self, v0: Vec2i, v1: Vec2i, color, precision=500):
+    def draw_line(self, v0: Vec2i, v1: Vec2i, color: Color, precision=500):
         for t in np.linspace(0, 1, precision):
             x = v0.x + (v1.x - v0.x) * t
             y = v0.y + (v1.y - v0.y) * t
             self.set_pixel(int(x), int(y), color)
 
-    def draw_tri(self, tri: Tri2i, color):
+    def draw_tri(self, tri: Tri2i, color: Color):
 
         # compute bounding box
         bbox_min_x, bbox_min_y, bbox_max_x, bbox_max_y = tri.bbox()
